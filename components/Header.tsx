@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Settings } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
 interface Props {
   onOpenSettings: () => void;

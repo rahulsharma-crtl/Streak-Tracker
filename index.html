@@ -111,6 +111,7 @@
       }
     }
   </script>
+  <!-- 
   <script type="importmap">
 {
   "imports": {
@@ -123,10 +124,12 @@
   }
 }
 </script>
+-->
 </head>
 
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen pb-10">
   <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
