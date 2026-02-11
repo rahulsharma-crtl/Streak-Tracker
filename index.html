@@ -111,7 +111,19 @@
       }
     }
   </script>
-  <!-- 
+  <script>
+    window.onerror = function (msg, url, line) {
+      const err = document.createElement('div');
+      err.style.color = 'red';
+      err.style.padding = '20px';
+      err.style.position = 'fixed';
+      err.style.top = '0';
+      err.style.background = 'white';
+      err.style.zIndex = '9999';
+      err.innerText = 'Error: ' + msg + ' at ' + url + ':' + line;
+      document.body.appendChild(err);
+    };
+  </script>
   <script type="importmap">
 {
   "imports": {
@@ -124,12 +136,12 @@
   }
 }
 </script>
--->
 </head>
 
 <body class="bg-slate-50 text-slate-900 antialiased min-h-screen pb-10">
   <div id="root"></div>
   <script type="module" src="/index.tsx"></script>
+  <!--
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -139,6 +151,7 @@
       });
     }
   </script>
+  -->
 </body>
 
 </html>
