@@ -1,0 +1,5 @@
+{
+  "name": "Streak Tracker",
+  "description": "A privacy-first tracker to help break habits with positive reinforcement, visual streaks, and reflection tools. All data stays on your device.",
+  "requestFramePermissions": []
+}
