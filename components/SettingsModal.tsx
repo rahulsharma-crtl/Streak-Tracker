@@ -7,9 +7,10 @@ interface Props {
   onSaveSettings: (s: AppSettings) => void;
   onClose: () => void;
   onSync: () => void;
+  isSyncing: boolean;
 }
 
-export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClose, onSync }) => {
+export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClose, onSync, isSyncing: isCloudSyncing }) => {
   const isSyncing = settings.syncKey && settings.syncKey.length > 3;
 
 
@@ -110,10 +111,23 @@ export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClo
               {isSyncing && (
                 <button
                   onClick={onSync}
-                  className="w-full flex items-center justify-center gap-2 p-3 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-brand-500/20 transition-all active:scale-[0.98]"
+                  disabled={isCloudSyncing}
+                  className={`w-full flex items-center justify-center gap-2 p-3 rounded-xl text-sm font-bold shadow-lg transition-all active:scale-[0.98] ${isCloudSyncing
+                      ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                      : 'bg-brand-500 hover:bg-brand-600 text-white shadow-brand-500/20'
+                    }`}
                 >
-                  <Cloud className="w-4 h-4" />
-                  Sync Now
+                  {isCloudSyncing ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
+                      Syncing...
+                    </>
+                  ) : (
+                    <>
+                      <Cloud className="w-4 h-4" />
+                      Sync Now
+                    </>
+                  )}
                 </button>
               )}
             </div>

@@ -33,6 +33,7 @@ export default function App() {
   const [isSlipModalOpen, setIsSlipModalOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
   const [hasLoaded, setHasLoaded] = useState(false);
 
   // Load Data
@@ -53,13 +54,21 @@ export default function App() {
   // Sync from Firebase
   const syncFromCloud = async (isManual = false) => {
     if (settings.syncKey && settings.syncKey.length > 3) {
-      const cloudData = await fetchFromFirebase(settings.syncKey);
-      if (cloudData) {
-        setLogs(prev => ({ ...prev, ...(cloudData.logs || {}) }));
-        setSettings(prev => ({ ...prev, ...(cloudData.settings || {}), syncKey: prev.syncKey }));
-        if (isManual) alert('Cloud data synced successfully!');
-      } else if (isManual) {
-        alert('No data found for this sync key.');
+      if (isManual) setIsSyncing(true);
+      try {
+        const cloudData = await fetchFromFirebase(settings.syncKey);
+        if (cloudData) {
+          setLogs(prev => ({ ...prev, ...(cloudData.logs || {}) }));
+          setSettings(prev => ({ ...prev, ...(cloudData.settings || {}), syncKey: prev.syncKey }));
+          if (isManual) alert('Cloud data synced successfully!');
+        } else if (isManual) {
+          alert('No cloud data found for this key. Make sure you typed it correctly!');
+        }
+      } catch (err) {
+        console.error(err);
+        if (isManual) alert('Error: Could not connect to the cloud. Please check your internet.');
+      } finally {
+        if (isManual) setIsSyncing(false);
       }
     }
   };
@@ -68,15 +77,21 @@ export default function App() {
     if (hasLoaded) {
       syncFromCloud();
     }
-    // Only fetch on initial load or when key changes fundamentally
-  }, [settings.syncKey, hasLoaded]);
+    // Only auto-fetch on initial mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasLoaded]);
 
   // Save Data
   useEffect(() => {
     if (hasLoaded) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ logs, settings }));
+
+      // Debounce cloud saves to avoid rapid Firestore writes
       if (settings.syncKey && settings.syncKey.length > 3) {
-        saveToFirebase(settings.syncKey, { logs, settings });
+        const timeout = setTimeout(() => {
+          saveToFirebase(settings.syncKey, { logs, settings });
+        }, 2000);
+        return () => clearTimeout(timeout);
       }
     }
   }, [logs, settings, hasLoaded]);
@@ -197,6 +212,7 @@ export default function App() {
           onSaveSettings={setSettings}
           onClose={() => setIsSettingsOpen(false)}
           onSync={() => syncFromCloud(true)}
+          isSyncing={isSyncing}
         />
       )}
 
