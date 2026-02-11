@@ -57,52 +57,91 @@ export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClo
             </select>
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
+              App Theme
+            </label>
+            <p className="text-xs text-slate-400 mb-2">Switch between light, dark, and your custom Neon theme.</p>
+            <div className="grid grid-cols-3 gap-2">
+              {(['light', 'dark', 'neon'] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => onSaveSettings({ ...settings, theme: t })}
+                  className={`p-2 rounded-xl border text-xs font-bold capitalize transition-all ${settings.theme === t
+                      ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20'
+                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    }`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <hr className="border-slate-100" />
 
           {/* Data Management */}
           <div>
             <h4 className="font-medium text-slate-800 mb-3">Sync & Backup</h4>
-            
-            <div className="bg-blue-50 p-3 rounded-lg mb-4 flex gap-3 items-start">
-              <Smartphone className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-              <p className="text-xs text-blue-800 leading-relaxed">
-                <strong>Data stays on this device.</strong> To move your streak to a new phone, Export here and Import on the new device.
-              </p>
+
+            <div className="bg-brand-50 p-3 rounded-lg mb-4 flex gap-3 items-start border border-brand-100">
+              <Smartphone className="w-5 h-5 text-brand-600 shrink-0 mt-0.5" />
+              <div className="text-xs text-brand-900 leading-relaxed">
+                <strong>Cloud Sync Enabled.</strong> Set a unique <b>Sync Key</b> to save your data permanently and sync across devices.
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <button
-                onClick={onExport}
-                className="flex items-center justify-center w-full gap-2 p-3 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-medium transition-colors"
-              >
-                <Download className="w-4 h-4" />
-                Export Data (JSON)
-              </button>
-              
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="flex items-center justify-center w-full gap-2 p-3 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 font-medium transition-colors"
-              >
-                <Upload className="w-4 h-4" />
-                Import Data
-              </button>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept=".json" 
+            <div className="space-y-4">
+              <div>
+                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 px-1">
+                  Cloud Sync Key
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter a secret key..."
+                  value={settings.syncKey || ''}
+                  onChange={(e) => onSaveSettings({ ...settings, syncKey: e.target.value })}
+                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-brand-500 font-mono text-sm"
+                />
+                <p className="text-[10px] text-slate-400 mt-1 px-1">Use a unique name or secret code (e.g. your name + favorite number).</p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={onExport}
+                  className="flex items-center justify-center gap-2 p-3 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors"
+                >
+                  <Download className="w-4 h-4" />
+                  Export
+                </button>
+
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center justify-center gap-2 p-3 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors"
+                >
+                  <Upload className="w-4 h-4" />
+                  Import
+                </button>
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".json"
                 onChange={handleFileChange}
               />
             </div>
           </div>
-          
-          <div className="bg-slate-50 p-3 rounded-lg text-xs text-slate-400 text-center flex flex-col gap-1">
-            <span className="flex items-center justify-center gap-1">
-              <AlertTriangle className="w-3 h-3" /> 
-              Warning
-            </span>
-            Clearing browser cache will delete your progress unless you Export first.
-          </div>
+
+          {!(settings.syncKey && settings.syncKey.length > 3) && (
+            <div className="bg-amber-50 p-3 rounded-lg text-xs text-amber-700 text-center flex flex-col gap-1 border border-amber-100">
+              <span className="flex items-center justify-center gap-1 font-bold">
+                <AlertTriangle className="w-3 h-3" />
+                Data Not Synced
+              </span>
+              Set a Sync Key above to save your data to the cloud permanently.
+            </div>
+          )}
         </div>
       </div>
     </div>

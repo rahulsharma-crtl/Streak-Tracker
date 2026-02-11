@@ -10,6 +10,8 @@ export interface LogEntry {
 export interface AppSettings {
   dayStartHour: number; // 0-23
   userName?: string;
+  syncKey?: string;
+  theme?: 'light' | 'dark' | 'neon';
 }
 
 export interface StreakStats {

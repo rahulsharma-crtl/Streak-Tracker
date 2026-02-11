@@ -3,6 +3,8 @@ import { AppSettings } from './types';
 export const DEFAULT_SETTINGS: AppSettings = {
   dayStartHour: 4, // 4 AM is a common "start of day" for night owls
   userName: 'Friend',
+  syncKey: '',
+  theme: 'neon',
 };
 
 export const MESSAGES_PRAISE = [
@@ -16,7 +18,7 @@ export const MESSAGES_PRAISE = [
   "Discipline is the bridge between goals and accomplishment.",
   "You are building a legacy of self-control.",
   "Peace comes from within. Do not seek it without.",
-  
+
   // Lord Shiva / Adiyogi Themes
   "Like Shiva, consume the poison of impulse and hold it still.",
   "Be the Adiyogi: Master of the mind, calm amidst chaos.",
