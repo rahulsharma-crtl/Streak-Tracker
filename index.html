@@ -111,6 +111,11 @@
       }
     }
   </script>
+</head>
+
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen pb-10">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
   <script>
     // Self-cleaning script: Purge old service workers and clear caches once
     const CLEAN_VERSION = 'v2_purge';
@@ -132,6 +137,6 @@
       setTimeout(() => window.location.reload(true), 500);
     }
   </script>
-  </body>
+</body>
 
 </html>
