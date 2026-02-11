@@ -112,46 +112,26 @@
     }
   </script>
   <script>
-    window.onerror = function (msg, url, line) {
-      const err = document.createElement('div');
-      err.style.color = 'red';
-      err.style.padding = '20px';
-      err.style.position = 'fixed';
-      err.style.top = '0';
-      err.style.background = 'white';
-      err.style.zIndex = '9999';
-      err.innerText = 'Error: ' + msg + ' at ' + url + ':' + line;
-      document.body.appendChild(err);
-    };
-  </script>
-  <script type="importmap">
-{
-  "imports": {
-    "date-fns": "https://aistudiocdn.com/date-fns@^4.1.0",
-    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
-    "react/": "https://aistudiocdn.com/react@^19.2.0/",
-    "react": "https://aistudiocdn.com/react@^19.2.0",
-    "clsx": "https://aistudiocdn.com/clsx@^2.1.1"
-  }
-}
-</script>
-</head>
-
-<body class="bg-slate-50 text-slate-900 antialiased min-h-screen pb-10">
-  <div id="root"></div>
-  <script type="module" src="/index.tsx"></script>
-  <!--
-  <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-          .then(reg => console.log('SW Registered'))
-          .catch(err => console.log('SW Error: ', err));
-      });
+    // Self-cleaning script: Purge old service workers and clear caches once
+    const CLEAN_VERSION = 'v2_purge';
+    if (localStorage.getItem('app_purge_flag') !== CLEAN_VERSION) {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+          for (let registration of registrations) {
+            registration.unregister();
+          }
+        });
+      }
+      if ('caches' in window) {
+        caches.keys().then(names => {
+          for (let name of names) caches.delete(name);
+        });
+      }
+      localStorage.setItem('app_purge_flag', CLEAN_VERSION);
+      // Wait a moment for cleanup then force reload
+      setTimeout(() => window.location.reload(true), 500);
     }
   </script>
-  -->
-</body>
+  </body>
 
 </html>
