@@ -51,21 +51,24 @@ export default function App() {
   }, []);
 
   // Sync from Firebase
-  useEffect(() => {
-    const syncFromCloud = async () => {
-      if (settings.syncKey && settings.syncKey.length > 3) {
-        const cloudData = await fetchFromFirebase(settings.syncKey);
-        if (cloudData) {
-          // Merge logic: For now, we simple update if cloud exists. 
-          // In a real app, we'd check timestamps.
-          setLogs(prev => ({ ...prev, ...(cloudData.logs || {}) }));
-          setSettings(prev => ({ ...prev, ...(cloudData.settings || {}), syncKey: prev.syncKey })); // Keep local syncKey
-        }
+  const syncFromCloud = async (isManual = false) => {
+    if (settings.syncKey && settings.syncKey.length > 3) {
+      const cloudData = await fetchFromFirebase(settings.syncKey);
+      if (cloudData) {
+        setLogs(prev => ({ ...prev, ...(cloudData.logs || {}) }));
+        setSettings(prev => ({ ...prev, ...(cloudData.settings || {}), syncKey: prev.syncKey }));
+        if (isManual) alert('Cloud data synced successfully!');
+      } else if (isManual) {
+        alert('No data found for this sync key.');
       }
-    };
+    }
+  };
+
+  useEffect(() => {
     if (hasLoaded) {
       syncFromCloud();
     }
+    // Only fetch on initial load or when key changes fundamentally
   }, [settings.syncKey, hasLoaded]);
 
   // Save Data
@@ -193,6 +196,7 @@ export default function App() {
           settings={settings}
           onSaveSettings={setSettings}
           onClose={() => setIsSettingsOpen(false)}
+          onSync={() => syncFromCloud(true)}
         />
       )}
 

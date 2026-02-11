@@ -6,9 +6,10 @@ interface Props {
   settings: AppSettings;
   onSaveSettings: (s: AppSettings) => void;
   onClose: () => void;
+  onSync: () => void;
 }
 
-export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClose }) => {
+export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClose, onSync }) => {
   const isSyncing = settings.syncKey && settings.syncKey.length > 3;
 
 
@@ -92,19 +93,29 @@ export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClo
                   />
                   {isSyncing && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-500">
-                      <Cloud className="w-4 h-4 animate-pulse" />
+                      <Cloud className="w-4 h-4" />
                     </div>
                   )}
                 </div>
                 {isSyncing ? (
                   <div className="flex items-center gap-1 mt-1 px-1">
-                    <div className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-ping" />
-                    <p className="text-[10px] text-brand-600 font-medium italic">Auto-syncing active</p>
+                    <div className="w-1.5 h-1.5 bg-brand-500 rounded-full" />
+                    <p className="text-[10px] text-brand-600 font-medium italic">Auto-save active</p>
                   </div>
                 ) : (
                   <p className="text-[10px] text-slate-400 mt-1 px-1">Use a unique name or secret code (e.g. your name + favorite number).</p>
                 )}
               </div>
+
+              {isSyncing && (
+                <button
+                  onClick={onSync}
+                  className="w-full flex items-center justify-center gap-2 p-3 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-brand-500/20 transition-all active:scale-[0.98]"
+                >
+                  <Cloud className="w-4 h-4" />
+                  Sync Now
+                </button>
+              )}
             </div>
           </div>
 
