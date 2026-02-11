@@ -1,31 +1,16 @@
 import React, { useRef } from 'react';
 import { AppSettings } from '../types';
-import { X, Upload, Download, Smartphone, AlertTriangle } from 'lucide-react';
+import { X, Smartphone, AlertTriangle, Cloud } from 'lucide-react';
 
 interface Props {
   settings: AppSettings;
   onSaveSettings: (s: AppSettings) => void;
   onClose: () => void;
-  onExport: () => void;
-  onImport: (data: string) => void;
 }
 
-export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClose, onExport, onImport }) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClose }) => {
+  const isSyncing = settings.syncKey && settings.syncKey.length > 3;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const result = event.target?.result;
-      if (typeof result === 'string') {
-        onImport(result);
-      }
-    };
-    reader.readAsText(file);
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
@@ -68,8 +53,8 @@ export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClo
                   key={t}
                   onClick={() => onSaveSettings({ ...settings, theme: t })}
                   className={`p-2 rounded-xl border text-xs font-bold capitalize transition-all ${settings.theme === t
-                      ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20'
-                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    ? 'bg-brand-500 border-brand-500 text-white shadow-lg shadow-brand-500/20'
+                    : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
                     }`}
                 >
                   {t}
@@ -92,44 +77,34 @@ export const SettingsModal: React.FC<Props> = ({ settings, onSaveSettings, onClo
             </div>
 
             <div className="space-y-4">
-              <div>
+              <div className="relative">
                 <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1 px-1">
                   Cloud Sync Key
                 </label>
-                <input
-                  type="text"
-                  placeholder="Enter a secret key..."
-                  value={settings.syncKey || ''}
-                  onChange={(e) => onSaveSettings({ ...settings, syncKey: e.target.value })}
-                  className="w-full p-3 border border-slate-200 rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-brand-500 font-mono text-sm"
-                />
-                <p className="text-[10px] text-slate-400 mt-1 px-1">Use a unique name or secret code (e.g. your name + favorite number).</p>
+                <div className="relative group">
+                  <input
+                    type="text"
+                    placeholder="Enter a secret key..."
+                    value={settings.syncKey || ''}
+                    onChange={(e) => onSaveSettings({ ...settings, syncKey: e.target.value })}
+                    className={`w-full p-3 pr-10 border rounded-xl bg-slate-50 outline-none focus:ring-2 focus:ring-brand-500 font-mono text-sm transition-all ${isSyncing ? 'border-brand-200' : 'border-slate-200'
+                      }`}
+                  />
+                  {isSyncing && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-500">
+                      <Cloud className="w-4 h-4 animate-pulse" />
+                    </div>
+                  )}
+                </div>
+                {isSyncing ? (
+                  <div className="flex items-center gap-1 mt-1 px-1">
+                    <div className="w-1.5 h-1.5 bg-brand-500 rounded-full animate-ping" />
+                    <p className="text-[10px] text-brand-600 font-medium italic">Auto-syncing active</p>
+                  </div>
+                ) : (
+                  <p className="text-[10px] text-slate-400 mt-1 px-1">Use a unique name or secret code (e.g. your name + favorite number).</p>
+                )}
               </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  onClick={onExport}
-                  className="flex items-center justify-center gap-2 p-3 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors"
-                >
-                  <Download className="w-4 h-4" />
-                  Export
-                </button>
-
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  className="flex items-center justify-center gap-2 p-3 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-50 text-sm font-medium transition-colors"
-                >
-                  <Upload className="w-4 h-4" />
-                  Import
-                </button>
-              </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept=".json"
-                onChange={handleFileChange}
-              />
             </div>
           </div>
 

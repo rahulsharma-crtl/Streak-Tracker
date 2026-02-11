@@ -128,34 +128,6 @@ export default function App() {
     }
   };
 
-  const handleImport = (data: string) => {
-    try {
-      const parsed = JSON.parse(data);
-      if (parsed.logs) {
-        setLogs(parsed.logs);
-        setSettings(parsed.settings || DEFAULT_SETTINGS);
-        alert('Data imported successfully!');
-        setIsSettingsOpen(false);
-      } else {
-        throw new Error("Invalid format");
-      }
-    } catch (e) {
-      alert('Invalid JSON data.');
-    }
-  };
-
-  const handleExport = () => {
-    const dataStr = JSON.stringify({ logs, settings }, null, 2);
-    const blob = new Blob([dataStr], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `no-chat-backup-${todayKey}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
 
   if (!hasLoaded) return null;
 
@@ -163,8 +135,8 @@ export default function App() {
 
   return (
     <div className={`max-w-md mx-auto min-h-screen sm:border-x sm:shadow-xl relative transition-colors duration-300 ${settings.theme === 'neon' ? 'theme-neon bg-slate-950 border-slate-900' :
-        settings.theme === 'dark' ? 'dark bg-slate-900 text-white border-slate-800' :
-          'bg-slate-50 border-slate-200'
+      settings.theme === 'dark' ? 'dark bg-slate-900 text-white border-slate-800' :
+        'bg-slate-50 border-slate-200'
       }`}>
       <Header onOpenSettings={() => setIsSettingsOpen(true)} />
 
@@ -221,8 +193,6 @@ export default function App() {
           settings={settings}
           onSaveSettings={setSettings}
           onClose={() => setIsSettingsOpen(false)}
-          onExport={handleExport}
-          onImport={handleImport}
         />
       )}
 
